@@ -1,0 +1,30 @@
+- name: APEalive infrastructure
+  become: true
+  become_method: sudo
+  vars:
+  # cloud_vendor: aws
+  # FOR ANOTHER LEVEL OF GROUP:CHILDREN STRUCTURE
+  # vars_files:
+  # - "vars/{{ function }}.yml"
+  # - "vars/{{ xyz }}.yml"
+  hosts: all
+  roles:
+    - sshd
+    - users
+    - system
+    - netplan
+    - network
+    - microk8s
+    #- hardening
+    #- cleanup
+  serial: "{{ batch_size|default(4) }}"
+
+# no_log: '{{ no_log_ansible|default(False) }}'
+
+# environment:
+#   HTTP_PROXY: "{{ http_proxy }}"
+#   HTTPS_PROXY: "{{ https_proxy }}"
+#   NO_PROXY: "{{ no_proxy }}"
+#   http_proxy: "{{ http_proxy }}"
+#   https_proxy: "{{ https_proxy }}"
+#   no_proxy: "{{ no_proxy }}"

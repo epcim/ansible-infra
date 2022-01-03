@@ -1,0 +1,21 @@
+
+
+- name: Ensure kernel headers are installed - Redhat.
+  shell: |
+    yum list installed -v |grep 'kernel-devel' | awk '{print $2}' | xargs -I% -n1 echo kernel-devel-%.x86_64 |xargs yum -y install make dkms
+  when: ansible_facts['os_family'] | lower == "redhat"
+  tags:
+    - falco
+    - kernel-headers
+    - upgrade
+
+
+- name: Ensure kernel headers are installed - Debian.
+  shell: |
+    dpkg --list | egrep 'ii\s+linux-image-[0-9]' | awk '{print $2}' |xargs apt-get install -y make dkms
+  when: ansible_facts['os_family'] | lower == "debian"
+  tags:
+    - falco
+    - kernel-headers
+    - upgrade
+

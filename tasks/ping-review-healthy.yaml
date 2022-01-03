@@ -1,0 +1,21 @@
+- gather_facts: false
+  hosts: all
+  serial: "{{ batch_size|default(1) }}"
+  tasks:
+    - block:
+        - wait_for_connection:
+            sleep: 1
+            timeout: 10
+        - name: "Check pod started"
+        # update `hosts` with localhost target and configured key
+          #local_action:
+          #  module: shell
+          #  sudo: False
+          #  _raw_params: "echo kubectl {{inventory_hostname}}; sleep 1"
+          #command: "echo kubectl {{inventory_hostname}}; sleep 1"
+          #delegate_to: 127.0.0.1
+      rescue:
+        - debug:
+            msg: "{{ inventory_hostname }} not connected."
+        - meta: clear_host_errors
+        - meta: end_host

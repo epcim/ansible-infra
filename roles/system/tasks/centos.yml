@@ -1,0 +1,30 @@
+---
+
+- name: be sure we have the latest version of all packages
+  yum:
+    state: latest
+    name: "*"
+    update_cache: yes
+  tags: upgrade
+
+- name: be sure the epel-release
+  yum:
+    state: latest
+    name: epel-release
+  tags: upgrade
+
+#- name: be sure dependencies are installed
+#  yum:
+#    state: latest
+#    name:
+#      - ca-certificates
+#      - python3
+#      - audit
+#      - audit-libs
+#      - parted
+
+- name: install system, debug tools
+  yum:
+    state: latest
+    name:
+    - lsof

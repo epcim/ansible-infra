@@ -1,0 +1,10 @@
+[Unit]
+Description=AIDE check
+
+[Service]
+Type=oneshot
+Restart=no
+ExecStart=/usr/bin/aide -c /etc/aide/aide.conf --check
+
+[Install]
+WantedBy=multi-user.target

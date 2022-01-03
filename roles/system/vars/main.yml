@@ -1,0 +1,4 @@
+
+install: True
+upgrade: False
+is_server: True

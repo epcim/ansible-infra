@@ -1,0 +1,246 @@
+
+# https://github.com/mrlesmithjr/ansible-netplan
+# alternative: https://github.com/hifis-net/ansible-role-netplan
+netplan_enabled: false
+netplan_remove_existing: true
+netplan_config_file: /etc/netplan/00-installer-config-wifi.yaml
+netplan_renderer: networkd
+netplan_configuration:
+  network:
+    version: 2
+    wifis:
+      wlo1:
+        access-points:
+          BARISTA5:
+            password: FIXME
+        dhcp4: true
+        dhcp4-overrides:
+          route-metric: 2048
+          use-routes: false
+    # NOTE: below works, except at the time of writing it failed
+    # to set routes on vlan50 properly, wlo1 won route priority
+    #
+    # ethernets:
+    #   enp88s0:
+    #       addresses: [172.31.1.11/24]
+    #       gateway4: 172.31.1.1
+    #       nameservers:
+    #         addresses: [127.0.0.1, 192.168.100.1]
+    #         search: [ apealive.net]
+    # # bridges:
+    # #   br0:
+    # #     dhcp4: true
+    # #     interfaces: [ vlan20 ]
+    # vlans:
+    #   # vlan10:
+    #   #     id: 10
+    #   #     link: enp88s0
+    #   #     addresses: [172.31.1.11/24]
+    #   vlan20:
+    #     id: 20
+    #     link: enp88s0
+    #     addresses: [172.31.2.11/24]
+    #   vlan50:
+    #     id: 50
+    #     link: enp88s0
+    #     addresses: [172.31.5.11/24]
+    #     routes:
+    #     - to: 172.31.5.10/24
+    #       via: 172.31.5.10
+    #       metric: 0
+    #   vlan120:
+    #     id: 120
+    #     link: enp88s0
+    #     addresses: [192.168.124.5/21]
+
+
+#(systemd)
+# https://github.com/stuvusIT/ansible_systemd_network
+# alternative: https://github.com/stackhpc/ansible-role-systemd-networkd
+
+# NOTE: FIXME add vlans, k module
+# ip link add link enp88s0 name vlan10 type vlan id 10
+# ip link add link enp88s0 name vlan20 type vlan id 20
+# ip link add link enp88s0 name vlan50 type vlan id 50
+# ip link add link enp88s0 name vlan120 type vlan id 120
+
+systemd_network_netdevs:
+  # vlan10:
+  #   NetDev: 
+  #     Kind: vlan
+  #   VLAN:
+  #     Id: 10
+  vlan20:
+    NetDev:
+      Kind: vlan
+    VLAN:
+      Id: 20
+  vlan50:
+    NetDev:
+      Kind: vlan
+    VLAN:
+      Id: 50
+  vlan120:
+    NetDev:
+      Kind: vlan
+    VLAN:
+      Id: 120
+  #br0:
+  #  NetDev:
+  #    Kind: bridge
+  #  #VLANFiltering: true
+
+systemd_network_networks:
+  wlo1:
+  # managed either by netplan !!
+    Network:
+      DHCP: ipv4
+      Domains: "apealive.net"
+    Route:
+      Metric: 2048
+  enp88s0:
+    Network:
+      Address: 172.31.1.11/24
+      Gateway: 172.31.1.1
+      DNS: 127.0.0.1 172.31.1.1
+      Domains: "apealive.net"
+      VLAN:
+        - vlan20
+        - vlan50
+        - vlan120
+      ConfigureWithoutCarrier: yes
+      # tagged only setup (all below to "no") \\
+      #LinkLocalAddressing: no
+      #LLDP: yes
+      #EmitLLDP: yes
+      #IPv6AcceptRA: no
+      #IPv6SendRA: no
+    Link:
+      RequiredForOnline: yes
+  #vlan20:
+  #  Network:
+  #    Address: 172.31.2.11/24
+  #    DNS: 127.0.0.1 192.168.100.1
+  #    Domains: "apealive.iot"
+  #    ConfigureWithoutCarrier: yes
+  #  Route:
+  #  - Destination: 172.31.2.0/24
+  #    #Gateway: 172.31.2.1
+  #    Metric: 1024
+  #vlan50:
+  #  Network:
+  #    Address: 172.31.5.11/24
+  #    DNS: 127.0.0.1 192.168.100.1
+  #    Domains: "apealive.net"
+  #    ConfigureWithoutCarrier: yes
+  #  Route:
+  #  - Destination: 172.31.5.0/24
+  #    #Gateway: 172.31.5.1
+  #    Metric: 0
+  vlan120:
+    Network:
+      Address: 192.168.124.1/21
+      DNS: 127.0.0.1 192.168.100.1
+      Domains: "apealive.iot"
+      ConfigureWithoutCarrier: yes
+    Route:
+    - Destination: 192.168.120.0/21
+      Gateway: 192.168.120.1
+      Metric: 1024
+
+
+# EXAMPLES
+
+# systemd_network_netdevs:
+#   br0:
+#     NetDev:
+#       Kind: bridge
+
+# systemd_network_networks:
+#   enp1s0 enp2s0:
+#     Network:
+#       Bridge: br0
+
+#     Route:
+#       - Destination: 192.168.5.0/24
+#         Gateway: 192.168.1.1
+  
+#   wg0:
+#     NetDev:
+#       Kind: wireguard
+#       Description: WireGuard
+#     WireGuard:
+#       # NOTE: PrivateKeyFile needs at least systemd version 242.
+#       PrivateKeyFile: /etc/wireguard/private-key
+#       ListenPort: 51820
+#     WireGuardPeer:
+#       # Use a list, so we can add further peers if we desire.
+#       - PublicKey: INSERT-SERVER-PUBLIC-KEY-HERE
+#         AllowedIPs: 0.0.0.0/0
+#         Endpoint: 1.2.3.4:51820
+#         PersistentKeepalive: 20
+
+
+
+#  (classic)
+## https://github.com/avinetworks/ansible-role-network_interface
+#
+## network_bond_interfaces:
+##   - device: bond0
+##     bootproto: dhcp
+##     bond_mode: 802.3ad
+##     bond_miimon: 100
+##     bond_slaves: [eth2, eth3]
+##    # Optional values
+##    bond_miimon: 100
+##    bond_lacp_rate: slow
+##    bond_xmit_hash_policy: layer3+4
+#
+#network_bridge_interfaces:
+#- device: br0
+#  type: bridge
+#  bridge_ports: [enp88s0]
+#  # # Optional values
+#  # bridge_ageing: 300
+#  # bridge_bridgeprio: 32768
+#  # bridge_fd: 15
+#  # bridge_gcint: 4
+#  # bridge_hello: 2
+#  # bridge_maxage: 20
+#  # bridge_maxwait: 0
+#  # bridge_pathcost: "eth1 100"
+#  # bridge_portprio: "eth1 128"
+#  # bridge_stp: "on"
+#  # bridge_waitport: "5 eth1 eth2"
+#            
+## mgmt
+#network_ether_interfaces:
+#- device: wlo1
+#  bootproto: dynamic
+#  gateway: auto
+#
+## fabric
+#network_ether_interfaces:
+#- device: br0
+#  bootproto: static
+#  cidr: 172.31.1.11/24
+#  gateway: 172.31.1.1
+#  #gateway: auto
+#network_vlan_interfaces:
+#- device: br0.120
+#  bootproto: static
+#  cidr: 192.168.124.1/24
+#  gateway: auto
+#network_vlan_interfaces:
+#- device: br0.50
+#  bootproto: static
+#  cidr: 192.168.50.10/24
+#  gateway: auto
+#network_vlan_interfaces:
+#- device: br0.50
+#  bootproto: static
+#  cidr: 192.168.20.10/24
+#  gateway: auto
+
+
+

@@ -1,0 +1,76 @@
+
+netplan_enabled: false
+
+systemd_network_netdevs:
+  vlan10:
+    NetDev: 
+      Kind: vlan
+    VLAN:
+      Id: 10
+  vlan20:
+    NetDev:
+      Kind: vlan
+    VLAN:
+      Id: 20
+  vlan50:
+    NetDev:
+      Kind: vlan
+    VLAN:
+      Id: 50
+  vlan120:
+    NetDev:
+      Kind: vlan
+    VLAN:
+      Id: 120
+
+systemd_network_networks:
+  enp2s0:
+    Network:
+      Address: 172.31.1.10/24
+      Gateway: 172.31.1.1
+      DNS: 127.0.0.1 172.31.1.1
+      Domains: "apealive.net"
+      VLAN:
+        - vlan20
+        - vlan50
+        - vlan120
+      ConfigureWithoutCarrier: yes
+      # tagged only setup (all below to "no") \\
+      #LinkLocalAddressing: no
+      #LLDP: yes
+      #EmitLLDP: yes
+      #IPv6AcceptRA: no
+      #IPv6SendRA: no
+    Link:
+      RequiredForOnline: yes
+  # vlan10:
+  vlan20:
+    Newtwork:
+      Address: 172.31.2.10/24
+      #Gateway: 172.31.2.1
+      DNS: 127.0.0.1 192.168.100.1
+      Domains: "apealive.iot"
+    Route:
+    - Destination: 172.31.2.0/24
+      #Gateway: 172.31.2.1
+      Metric: 1024
+  vlan50:
+    Newtwork:
+      Address: 172.31.5.10/24
+      #Gateway: 172.31.5.1
+      DNS: 127.0.0.1 192.168.100.1
+    Route:
+    - Destination: 172.31.5.0/24
+      #Gateway: 172.31.5.1
+      Metric: 1024
+
+  vlan120:
+    Newtwork:
+      Address: 192.168.124.1/21
+      DNS: 127.0.0.1 192.168.100.1
+    Route:
+    - Destination: 192.168.120.0/21
+      Gateway: 192.168.120.1
+      Metric: 1024
+ 
+

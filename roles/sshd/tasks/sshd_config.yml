@@ -1,0 +1,37 @@
+---
+
+# SSH-CERT AUTH
+# - name: configure ssh-cert auth
+#   action: file path=/etc/ssh/auth_principals state=directory
+#     owner=0 group=0 mode=0755
+# 
+# - name: upload user ssh-cert ca certs
+#   action: copy src=ssh/ca_{{ placement }}.pub
+#     dest=/etc/ssh/ca.pub
+#     owner=0 group=0 mode=640
+#   notify:
+#   - restart sshd
+# 
+# - name: upload user auth_principals
+#   action: copy src=ssh/auth_principals/{{ item }}
+#     dest=/etc/ssh/auth_principals/
+#     owner=0 group=0 mode=644
+#   with_items: {{ admin_users }}
+#   notify:
+#   - restart sshd
+
+- name: sshd configuration file
+  template:
+    src: sshd_config.metal.j2
+    dest: "{{ sshdconfig }}"
+    owner: 0
+    group: 0
+    mode: 0600
+    validate: "sshd -T -f %s"
+    backup: yes
+  vars:
+    sshd_allow_users: "{{ (admin_users + autom_users) | join(' ') }} "
+  notify:
+  - restart sshd
+# when: ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
+

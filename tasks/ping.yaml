@@ -1,0 +1,15 @@
+- gather_facts: false
+  hosts: all
+  tasks:
+    - block:
+        - wait_for_connection:
+            sleep: 1
+            timeout: 10
+      rescue:
+        - debug:
+            msg: "{{ inventory_hostname }} not connected."
+        - meta: clear_host_errors
+        - meta: end_host
+
+    - debug:
+        msg: "{{ inventory_hostname }} is running"

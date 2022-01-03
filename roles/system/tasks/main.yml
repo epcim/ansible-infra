@@ -1,0 +1,47 @@
+# OS related changes (cherry-pick from the server role)
+#
+- name: Add the OS specific varibles
+  include_vars: "{{ ansible_os_family | lower }}.yml"
+
+# - name: Define server_pkgs
+#   set_fact:
+#     network_pkgs: "{{ _server_pkgs }}"
+#   when: network_pkgs is not defined
+
+- name: Install server related packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ system_server_pkgs }}"
+  when:
+  - upgrade
+  - install
+  - is_server
+
+- name: Make sure the 8021q module is loaded
+  modprobe:
+    name: 8021q
+    state: present
+  # notify: restart networking
+  when: is_server
+
+- name: Make the 8021q module persistent
+  become: true
+  lineinfile:
+    line: '8021q'
+    dest: /etc/modules
+    insertafter: EOF
+  when: is_server
+
+- include_tasks: "{{ ansible_facts['distribution'] | lower }}.yml"
+
+- name: reboot to apply updates
+  reboot: {}
+  when:
+    - allow_node_restart|default(false)|bool == true
+
+- name: wait for machine to come back
+  wait_for_connection: {}
+  when:
+    - allow_node_restart|default(false)|bool == true
+

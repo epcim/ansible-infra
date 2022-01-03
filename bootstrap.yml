@@ -1,0 +1,13 @@
+- name: foundation, bootstrap node
+  become: true
+  become_method: sudo
+  hosts: all
+  roles:
+    #- users
+    - sshd
+    - system
+    #- server
+    #- dnsmasq
+    #- http-ipxe
+
+  #no_log: '{{ no_log_ansible|default(False) }}'

@@ -1,0 +1,232 @@
+---
+
+- name: Ensure aide is installed
+  package:
+    name: aide
+    state: present
+  when: ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
+  tags:
+    - package_aide_installed
+    - medium_severity
+    - enable_strategy
+    - low_complexity
+    - low_disruption
+    - no_reboot_needed
+    - CCE-27096-7
+    - PCI-DSS-Req-11.5
+    - NIST-800-53-CM-3(d)
+    - NIST-800-53-CM-3(e)
+    - NIST-800-53-CM-6(d)
+    - NIST-800-53-CM-6(3)
+    - NIST-800-53-SC-28
+    - NIST-800-53-SI-7
+    - CJIS-5.10.1.3
+
+- name: Ensure AIDE is installed
+  package:
+    name: '{{ item }}'
+    state: present
+  with_items:
+    - aide
+  when: ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
+  tags:
+    - aide_periodic_cron_checking
+    - medium_severity
+    - restrict_strategy
+    - low_complexity
+    - low_disruption
+    - no_reboot_needed
+    - CCE-26952-2
+    - PCI-DSS-Req-11.5
+    - DISA-STIG-RHEL-07-020030
+    - NIST-800-53-CM-3(d)
+    - NIST-800-53-CM-3(e)
+    - NIST-800-53-CM-3(5)
+    - NIST-800-53-CM-6(d)
+    - NIST-800-53-CM-6(3)
+    - NIST-800-53-SC-28
+    - NIST-800-53-SI-7
+    - CJIS-5.10.1.3
+
+- name: Ensure /etc/aide directory
+  action: file path=/etc/aide state=directory
+    owner=0 group=0 mode=0755
+  tags:
+    - aide
+    - not ansible_check_mode
+
+- name: Check upstream aide.conf
+  stat: path=/etc/aide.conf
+  register: etcaideconf
+  tags:
+    - aide
+    - aide_periodic_cron_checking
+
+- name: sync aide.conf upstream
+  shell: cp /etc/aide.conf /etc/aide/aide.conf
+  when: etcaideconf.stat.exists is defined and etcaideconf.stat.exists
+  tags:
+    - aide
+    - not ansible_check_mode
+    - aide_periodic_cron_checking
+
+- name: Configure aide
+  block:
+    - lineinfile:
+        dest: /etc/aide/aide.conf
+        regexp: ^gzip_dbout=.*
+        line: "gzip_dbout=yes"
+        state: present
+        create: true
+    - lineinfile:
+        dest: /etc/aide/aide.conf
+        regexp: ^database=.*
+        line: "database=file:/var/lib/aide/aide.db.gz"
+        state: present
+        create: true
+    - lineinfile:
+        dest: /etc/aide/aide.conf
+        regexp: ^database_out=.*
+        line: "database_out=file:/var/lib/aide/aide.db.new.gz"
+        state: present
+        create: true
+    - lineinfile:
+        dest: /etc/aide/aide.conf
+        regexp: ^database_new=.*
+        line: "database_new=file:/var/lib/aide/aide.db.new.gz"
+        state: present
+        create: true
+    - name: set aide verbosity
+      lineinfile:
+        path: /etc/aide/aide.conf
+        regexp: ^verbose=.*
+        line: "verbose=4"
+        state: present
+        create: true
+    - name: set aide exceptions - vininfo
+      blockinfile:
+        dest: /etc/aide/aide.conf
+        state: present
+        create: true
+        marker: "# {mark} ansible managed – do not delete these marking lines"
+        block: |
+          !/var/log/pods
+          !/etc/lvm/archive
+          !/var/run/faillock
+          !/var/log/amazon/ssm
+          !/var/log/journal
+          /var/log/dmesg.* p+u+g+n+acl+selinux+ftype
+          /root/\.viminfo p+u+g+acl+selinux+xattrs
+          /home/vesop/\.viminfo p+u+g+acl+selinux+xattrs
+          /home/vesadmin/\.viminfo p+u+g+acl+selinux+xattrs
+        backup: false
+  when: ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
+  tags:
+    - aide
+    - not ansible_check_mode
+    - aide_periodic_cron_checking
+# 2020/12 - previous runs of above blockinfile had backups ennabled - cleanup
+- name: remove aide.conf backup files
+  block:
+  - find:
+      paths: /etc/aide
+      patterns: "aide.conf.*~"
+    register: find_results
+  - file:
+      path: "{{ item['path'] }}"
+      state: absent
+    with_items: "{{ find_results['files'] }}"
+  when: ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
+  tags:
+    - aide-clean
+    - aide
+
+- name: Check aide db exist
+  stat:
+    path: /var/lib/aide/aide.db.gz
+  register: aide_db
+  when:
+  - not ansible_check_mode
+  tags:
+    - aide
+
+- name: Set AIDE binary path
+  set_fact:
+    aide_binary_path: /usr/sbin/aide
+    aideinit_cmd: "/usr/sbin/aide -c /etc/aide/aide.conf --init"
+  when: ansible_facts['os_family'] | lower == "redhat"
+  tags:
+    #- upgrade
+    - aide
+    - aide-update
+    - check-security
+
+- name: Set AIDE binary path
+  set_fact:
+    aide_binary_path: /usr/bin/aide
+    aideinit_cmd: "/usr/sbin/aideinit -c /etc/aide/aide.conf"
+  when: ansible_facts['os_family'] | lower == "debian"
+  tags:
+    #- upgrade
+    - aide
+    - aide-update
+    - check-security
+
+- name: Run AIDE Init
+  command:
+    cmd: "{{ aideinit_cmd }}"
+  when: 
+    - not ansible_check_mode
+    - not aide_db.stat.exists
+  tags:
+    - aide
+
+- name: Check aide db (new) is initialized
+  stat:
+    path: /var/lib/aide/aide.db.new.gz
+  register: aide_db_new
+  when:
+  - not ansible_check_mode
+  tags:
+    - aide
+
+- name: Finish AIDE Init
+  command:
+    cmd: mv -f /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz
+  when:
+  - not ansible_check_mode
+  - aide_db_new.stat.exists
+  tags:
+    - aide
+
+- name: Run AIDE Update
+  command:
+    cmd: "{{ aide_binary_path }} -c /etc/aide/aide.conf --update"
+  when:
+  - not ansible_check_mode
+  - aide_update_database|bool == true
+  ignore_errors: yes # expected to find differences on update
+  tags: 
+  #- upgrade
+  - aide-update
+
+- name: Update AIDE Database
+  command:
+    cmd: mv -f /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz
+  when:
+  - not ansible_check_mode
+  - aide_update_database|bool == true
+  tags:
+    - aide
+    - aide-update
+    #- upgrade
+
+- name: Run AIDE Check
+  command:
+    cmd: "{{ aide_binary_path }} -c /etc/aide/aide.conf --check"
+  when:
+    - not ansible_check_mode
+  tags:
+    - aide
+    - check-security
+

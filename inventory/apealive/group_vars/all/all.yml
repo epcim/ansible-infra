@@ -1,0 +1,36 @@
+
+# system
+is_server: True
+
+# microk8s
+# https://github.com/istvano/ansible_role_microk8s/blob/master/defaults/main.yml
+microk8s_version: "1.21/stable"
+microk8s_dns_resolvers: 8.8.4.4,192.168.100.1
+registry_size: 20Gi
+microk8s_plugins:
+  dashboard: false
+  dns: "{{ microk8s_dns_resolvers }}"
+  helm3: true
+  #host-access: true
+  #ingress: true
+  metrics-server: true
+  #rbac: true
+  registry: false # "size={{ registry_size }}"   
+  storage: true
+  traefik: false
+  prometheus: false
+#users: ["epcim"]
+microk8s_enable_HA: false
+# hostgroup whose members will form high-availability cluster
+#microk8s_group_HA: "microk8s_HA"
+# regex to select IP address for joining nodes in HA setup
+#microk8s_ip_regex_HA: "([0-9]{1,3}[\\.]){3}[0-9]{1,3}"
+
+
+#hardening: ""
+
+# ansible
+#ansible_user: ops
+#ansible_ssh_common_args: '-o ProxyCommand="ssh -i ~/.ssh/id_rsa -W %h:%p -q ops@master-0.xxx.yyy.net"'
+#ansible_ssh_private_key_file: ~/.ssh/id_ed25519
+

@@ -1,0 +1,12 @@
+
+system_server_packages:
+  - bridge-utils
+  - ifenslave
+  - iproute2
+  - open-iscsi
+  - ipcalc
+  - net-tools
+  - vim
+  - jq
+  - curl
+  - wget

@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[dev-packages]
+
+[packages]
+python-netaddr = "*"
+envtpl = "*"
+ansible = "*"
+
+[optional-packages]
+# NOTE, IMHO pipenv don't support groups, use line to [dev-packages]
+
+[requires]
+python_version = "3"

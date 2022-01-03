@@ -1,0 +1,40 @@
+---
+- gather_facts: false
+  hosts: all
+  serial: "{{ batch_size|default(1) }}"
+  tasks:
+  - block:
+      - name: Reboot
+        #reboot: {}
+        shell: "uptime && reboot"
+        #
+        #async: 1
+        #poll: 0
+        when:
+          - allow_node_restart|default(false)|bool == true
+      - name: Wait for the reboot to complete
+        # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/wait_for_connection_module.html
+        wait_for_connection:
+          connect_timeout: 20
+          sleep: 30
+          delay: 30
+          timeout: 300
+        when:
+          - allow_node_restart|default(false)|bool == true
+
+    #NOTE
+      - name: Wait 10m for pods to start
+        #reboot: {}
+        shell: "sleep 600"
+        when:
+          - allow_node_restart|default(false)|bool == true
+
+    #NOTE: rescue will allow to continue on nodes that fail to boot
+    rescue:
+        - debug:
+            msg: "{{ inventory_hostname }} not connected OR not started properly."
+        - meta: clear_host_errors
+        - meta: end_host
+ #- debug:
+ #    msg: "{{ inventory_hostname }} rebooted"
+

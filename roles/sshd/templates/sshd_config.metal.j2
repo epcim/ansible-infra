@@ -1,0 +1,50 @@
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_ecdsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key
+
+#Subsystem sftp internal-sftp
+#Subsystem sftp	/usr/libexec/openssh/sftp-server
+Subsystem sftp	/usr/lib/openssh/sftp-server
+
+UseDNS no
+UsePAM yes
+PrintLastLog no # handled by PAM
+ClientAliveCountMax 0
+ClientAliveInterval 300
+
+GSSAPIAuthentication no
+ChallengeResponseAuthentication no
+PasswordAuthentication no
+PermitEmptyPasswords no
+MaxAuthTries 4
+MaxSessions 3
+MaxStartups 10:30:60
+
+
+Protocol 2
+LogLevel INFO
+X11Forwarding no
+IgnoreRhosts yes
+HostbasedAuthentication no
+PermitUserEnvironment no
+LoginGraceTime 5m
+
+# CIPHERS
+Ciphers chacha20-poly1305@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com
+KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group-exchange-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group14-sha256,diffie-hellman-group14-sha1
+HostKeyAlgorithms ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,ssh-ed25519-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ssh-dss-cert-v01@openssh.com,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,rsa-sha2-512,rsa-sha2-256
+Macs hmac-sha2-512,hmac-sha2-256,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com
+
+
+Banner /etc/issue.net
+PrintMotd no
+
+PermitRootLogin no
+
+AllowUsers {{ sshd_allow_users }}
+
+TrustedUserCAKeys /etc/ssh/ca.pub
+#AuthorizedPrincipalsFile /etc/ssh/auth_principals/%u
+
+Match User centos,ubuntu,root,rpi
+    AuthorizedKeysFile /dev/null

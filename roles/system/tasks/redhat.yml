@@ -1,0 +1,35 @@
+---
+
+- name: be sure repo_gpgcheck is not enabled as it is not supported
+  ini_file:
+    dest: /etc/yum.conf
+    section: main
+    option: repo_gpgcheck
+    value: '0'
+    create: false
+  tags: upgrade
+  
+- name: be sure we have the latest version of all packages
+  yum:
+    name: "*"
+    state: latest
+  tags: upgrade
+
+# https://access.redhat.com/articles/4599971
+- name: be sure all of the redhat repos are enabled
+  shell: "yum-config-manager --enable {{ item }}"
+  with_items:
+    - rhel-7-server-rhui-rpms
+    - rhel-7-server-rhui-rh-common-rpms
+    - rhel-7-server-rhui-extras-rpms
+
+#- name: be sure the dependencies are installed
+#  yum:
+#    state: latest
+#    name:
+#      - ca-certificates
+#      - curl
+#      - yum-utils
+#      - audit
+#      - audit-libs
+#      - parted

@@ -1,0 +1,14 @@
+
+# host list is not needed for AWS (where playbook is executed by AWS System Manager)
+# For other purposes, generate host list with
+#   `kubectl get nodes -o wide| sort -rhk 4 | awk -F " " '{printf "%s ansible_host=%s    \t#%s\n",$1,$6,$4;}'`
+
+[all]
+ape1 ansible_host=172.31.5.10
+cmp1-nuc11 ansible_host=172.31.1.11
+
+#[kube]
+#cmp1-nuc11 ansible_host=172.16.0.16
+
+#[kube:vars]
+#super_group = sudo
