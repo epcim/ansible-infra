@@ -13,7 +13,7 @@ is_server: True
 
 # microk8s
 # https://github.com/istvano/ansible_role_microk8s/blob/master/defaults/main.yml
-microk8s_version: "1.22/stable"
+microk8s_version: "1.23/stable"
 microk8s_dns_resolvers: 8.8.4.4,192.168.100.1
 registry_size: 20Gi
 microk8s_plugins:
