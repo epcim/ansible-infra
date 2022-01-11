@@ -28,7 +28,6 @@ systemd_network_networks:
     Network:
       Address: 172.31.1.10/24
       Gateway: 172.31.1.1
-      DNS: 127.0.0.1 172.31.1.1
       Domains: "apealive.net"
       VLAN:
         - vlan20
@@ -48,7 +47,7 @@ systemd_network_networks:
     Newtwork:
       Address: 172.31.2.10/24
       #Gateway: 172.31.2.1
-      DNS: 127.0.0.1 192.168.100.1
+      DNS: 192.168.100.1
       Domains: "apealive.iot"
     Route:
     - Destination: 172.31.2.0/24
@@ -58,7 +57,7 @@ systemd_network_networks:
     Newtwork:
       Address: 172.31.5.10/24
       #Gateway: 172.31.5.1
-      DNS: 127.0.0.1 192.168.100.1
+      DNS: 192.168.100.1
     Route:
     - Destination: 172.31.5.0/24
       #Gateway: 172.31.5.1
@@ -67,7 +66,7 @@ systemd_network_networks:
   vlan120:
     Newtwork:
       Address: 192.168.124.1/21
-      DNS: 127.0.0.1 192.168.100.1
+      DNS: 192.168.100.1
     Route:
     - Destination: 192.168.120.0/21
       Gateway: 192.168.120.1

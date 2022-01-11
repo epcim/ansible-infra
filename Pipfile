@@ -9,6 +9,9 @@ name = "pypi"
 python-netaddr = "*"
 envtpl = "*"
 ansible = "*"
+# kvm
+lxml = "*"
+libvirt-python = "*"
 
 [optional-packages]
 # NOTE, IMHO pipenv don't support groups, use line to [dev-packages]

@@ -1,4 +1,4 @@
-- name: APEalive infrastructure
+- name: k8s
   become: true
   become_method: sudo
   vars:
@@ -17,7 +17,17 @@
     - microk8s
     #- hardening
     #- cleanup
-  serial: "{{ batch_size|default(4) }}"
+  serial: "{{ batch_size|default(10) }}"
+
+
+- name: k8s-with-kvm
+  become: true
+  become_method: sudo
+  hosts:
+  - cmp1-nuc11
+  roles:
+  - kvm-setup
+  - terraform
 
 # no_log: '{{ no_log_ansible|default(False) }}'
 

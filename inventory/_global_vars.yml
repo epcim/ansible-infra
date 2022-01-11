@@ -1,9 +1,4 @@
 
-# users
-admin_users:
-  - epcim
-autom_users: #automation (no sudo for root)
-  - ops
 
 # upgrade
 upgrade: false

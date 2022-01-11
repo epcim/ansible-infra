@@ -5,7 +5,7 @@
   include_tasks: configure-groups.yml
   when: "users is defined and users not in ([], None, '', omit)"
 
-- name: configure single node addons
+- name: configure single-node-addons
   include_tasks: addons.yml
   when: not microk8s_enable_HA
 

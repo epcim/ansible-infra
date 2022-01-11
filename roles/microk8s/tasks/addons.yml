@@ -9,26 +9,26 @@
   set_fact:
     microk8s_status: "{{ microk8s_status.stdout | from_yaml }}"
 
-- name: enable addons
-  become: yes
-  loop: "{{ microk8s_status.addons }}"
-  loop_control:
-    label: "{{ item.name }}"
-  command:
-    cmd: microk8s.enable {{ item.name }}{% if microk8s_plugins[item.name] != True %}:{{ microk8s_plugins[item.name] }}{% endif %}
-  when:
-    - item.status == 'disabled'
-    - item.name in microk8s_plugins
-    - microk8s_plugins[item.name]
+# - name: enable-addons
+#   become: yes
+#   loop: "{{ microk8s_status.addons }}"
+#   loop_control:
+#     label: "{{ item.name }}"
+#   command:
+#     cmd: microk8s.enable {{ item.name }}{% if microk8s_plugins[item.name] != True %}:{{ microk8s_plugins[item.name] }}{% endif %}
+#   when:
+#     - item.status == 'disabled'
+#     - item.name in microk8s_plugins
+#     - microk8s_plugins[item.name]
 
-- name: disable addons
-  become: yes
-  loop: "{{ microk8s_status.addons }}"
-  loop_control:
-    label: "{{ item.name }}"
-  command:
-    cmd: microk8s.disable {{ item.name }}
-  when:
-    - item.status == 'enabled'
-    - item.name in microk8s_plugins
-    - not microk8s_plugins[item.name]
+# - name: disable-addons
+#   become: yes
+#   loop: "{{ microk8s_status.addons }}"
+#   loop_control:
+#     label: "{{ item.name }}"
+#   command:
+#     cmd: microk8s.disable {{ item.name }}
+#   when:
+#     - item.status == 'enabled'
+#     - item.name in microk8s_plugins
+#     - not microk8s_plugins[item.name]

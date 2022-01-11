@@ -1,0 +1,49 @@
+
+# install packages
+- include: "{{ ansible_facts['os_family'] | lower }}.yml"
+
+# configure netowrking
+- include: "kvm-network.yml"
+  when: kvm_virtual_networks is defined
+
+# configure pool
+- include: "kvm-storage.yml"
+  when: kvm_storage_pools is defined
+
+
+
+# review
+- name: make sure 'br0' host bridge exists
+  command:
+    cmd: ip a show br0
+
+# - name: make sure kvm network 'host-bridge' exists that uses br0
+#   community.libvirt.virt_net:
+#     command: get_xml
+#     name: host-bridge
+#   register: res
+# - debug: msg="{{res}}"
+
+# - name: make sure kvm network 'default' exists
+#   community.libvirt.virt_net:
+#     command: get_xml
+#     name: default
+#   register: res
+# - debug: msg="{{res}}"
+
+# - name: make sure disk pool 'default' exists
+#   community.libvirt.virt_pool:
+#     command: get_xml
+#     name: default
+#   register: res
+# - debug: msg="{{res}}"
+
+
+# List available networks
+- community.libvirt.virt_net:
+    command: list_nets
+
+# List available pools
+- community.libvirt.virt_pool:
+    command: list_pools
+

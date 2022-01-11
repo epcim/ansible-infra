@@ -1,7 +1,37 @@
 
+## KVM
+terraform_enabled: false # NOTE: disabled after first run
+terraform_template: "../terraform/kvm" # relative to playbook_dir
+kvm_virtual_networks:
+#https://github.com/mrlesmithjr/ansible-kvm
+  - name: host-network
+    mode: bridge
+    bridge_name: br0
+    autostart: false
+    state: active
+  #   vlans:
+  #     - name: vlan10
+  #       trunk: false
+  #       vlan: 10
+  #     - name: vlan-all
+  #       trunk: true
+  #       vlan:
+  #         - 10
+  #         - 20
+  #         - 50
+kvm_storage_pools:
+#https://github.com/mrlesmithjr/ansible-kvm
+  - name: default
+    path: /var/lib/libvirt/filesystems/
+    autostart: false
+    state: active
+
+## NETWORK
 # https://github.com/mrlesmithjr/ansible-netplan
 # alternative: https://github.com/hifis-net/ansible-role-netplan
-netplan_enabled: false
+# - wifi, for management, managed by netplan
+# - eth, for vlan networking, managed by systemd
+netplan_enabled: false        # NOTE, disable after first setup
 netplan_remove_existing: true
 netplan_config_file: /etc/netplan/00-installer-config-wifi.yaml
 netplan_renderer: networkd
@@ -9,7 +39,6 @@ netplan_configuration:
   network:
     version: 2
     wifis:
-      wlo1:
         access-points:
           BARISTA5:
             password: FIXME
@@ -17,42 +46,6 @@ netplan_configuration:
         dhcp4-overrides:
           route-metric: 2048
           use-routes: false
-    # NOTE: below works, except at the time of writing it failed
-    # to set routes on vlan50 properly, wlo1 won route priority
-    #
-    # ethernets:
-    #   enp88s0:
-    #       addresses: [172.31.1.11/24]
-    #       gateway4: 172.31.1.1
-    #       nameservers:
-    #         addresses: [127.0.0.1, 192.168.100.1]
-    #         search: [ apealive.net]
-    # # bridges:
-    # #   br0:
-    # #     dhcp4: true
-    # #     interfaces: [ vlan20 ]
-    # vlans:
-    #   # vlan10:
-    #   #     id: 10
-    #   #     link: enp88s0
-    #   #     addresses: [172.31.1.11/24]
-    #   vlan20:
-    #     id: 20
-    #     link: enp88s0
-    #     addresses: [172.31.2.11/24]
-    #   vlan50:
-    #     id: 50
-    #     link: enp88s0
-    #     addresses: [172.31.5.11/24]
-    #     routes:
-    #     - to: 172.31.5.10/24
-    #       via: 172.31.5.10
-    #       metric: 0
-    #   vlan120:
-    #     id: 120
-    #     link: enp88s0
-    #     addresses: [192.168.124.5/21]
-
 
 #(systemd)
 # https://github.com/stuvusIT/ansible_systemd_network
@@ -85,25 +78,31 @@ systemd_network_netdevs:
       Kind: vlan
     VLAN:
       Id: 120
-  #br0:
-  #  NetDev:
-  #    Kind: bridge
-  #  #VLANFiltering: true
+  br0:
+    NetDev:
+      Kind: bridge
+      VLANFiltering: true
 
 systemd_network_networks:
   wlo1:
   # managed either by netplan !!
     Network:
       DHCP: ipv4
-      Domains: "apealive.net"
+      #Domains: "apealive.net"
+      UseDNS: no
+      UseDomains: no
     Route:
       Metric: 2048
   enp88s0:
     Network:
+      Bridge: br0
+  br0:
+    Network:
+      DHCP: no
       Address: 172.31.1.11/24
       Gateway: 172.31.1.1
-      DNS: 127.0.0.1 172.31.1.1
-      Domains: "apealive.net"
+      DNS: 172.31.1.1 8.8.8.8
+      #Domains: "apealive.net"
       VLAN:
         - vlan20
         - vlan50
@@ -120,28 +119,26 @@ systemd_network_networks:
   #vlan20:
   #  Network:
   #    Address: 172.31.2.11/24
-  #    DNS: 127.0.0.1 192.168.100.1
   #    Domains: "apealive.iot"
   #    ConfigureWithoutCarrier: yes
   #  Route:
   #  - Destination: 172.31.2.0/24
   #    #Gateway: 172.31.2.1
   #    Metric: 1024
-  #vlan50:
-  #  Network:
-  #    Address: 172.31.5.11/24
-  #    DNS: 127.0.0.1 192.168.100.1
-  #    Domains: "apealive.net"
-  #    ConfigureWithoutCarrier: yes
-  #  Route:
-  #  - Destination: 172.31.5.0/24
-  #    #Gateway: 172.31.5.1
-  #    Metric: 0
+  vlan50:
+    Network:
+      DHCP: no
+      Address: 172.31.5.11/24
+      # Domains: "apealive.net"
+      ConfigureWithoutCarrier: yes
+    Route:
+    - Destination: 172.31.5.0/24
+      #Gateway: 172.31.5.1
+      Metric: 0
   vlan120:
     Network:
       Address: 192.168.124.1/21
-      DNS: 127.0.0.1 192.168.100.1
-      Domains: "apealive.iot"
+      #Domains: "apealive.iot"
       ConfigureWithoutCarrier: yes
     Route:
     - Destination: 192.168.120.0/21

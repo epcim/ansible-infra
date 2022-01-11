@@ -1,0 +1,13 @@
+- name: be sure the dependencies are installed
+  apt:
+    state: latest
+    name:
+      - ca-certificates
+      - python3
+      - python3-libvirt
+      - python3-lxml
+      - qemu-kvm
+      - libvirt-daemon-system
+      - libvirt-clients
+      - bridge-utils
+      - mkisofs

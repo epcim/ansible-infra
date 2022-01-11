@@ -1,10 +1,19 @@
 
+# admin users
+admin_authorized_keys:
+- ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGwsfObHWHqBv6UQBjvm0nkgnAGc5MZPuQXJ3ln4sM1P pmichalec@dontpanic
+admin_users:
+- epcim
+autom_users: #automation (no sudo for root)
+- ops
+
+
 # system
 is_server: True
 
 # microk8s
 # https://github.com/istvano/ansible_role_microk8s/blob/master/defaults/main.yml
-microk8s_version: "1.21/stable"
+microk8s_version: "1.22/stable"
 microk8s_dns_resolvers: 8.8.4.4,192.168.100.1
 registry_size: 20Gi
 microk8s_plugins:
