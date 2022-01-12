@@ -7,7 +7,7 @@ kvm_virtual_networks:
   - name: host-network
     mode: bridge
     bridge_name: br0
-    autostart: false
+    autostart: true
     state: active
   #   vlans:
   #     - name: vlan10
@@ -23,7 +23,7 @@ kvm_storage_pools:
 #https://github.com/mrlesmithjr/ansible-kvm
   - name: default
     path: /var/lib/libvirt/filesystems/
-    autostart: false
+    autostart: true
     state: active
 
 ## NETWORK

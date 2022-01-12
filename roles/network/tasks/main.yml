@@ -164,11 +164,11 @@
     enabled: True
     state: started
 
-- name: Disable legacy networking
-  service:
-    name: networking
-    enabled: False
-    state: stopped
+# - name: Disable legacy networking
+#   service:
+#     name: networking
+#     enabled: False
+#     state: stopped
 
 - name: Remove /etc/network/interfaces
   file:

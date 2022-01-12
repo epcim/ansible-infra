@@ -4,8 +4,20 @@
 #   `kubectl get nodes -o wide| sort -rhk 4 | awk -F " " '{printf "%s ansible_host=%s    \t#%s\n",$1,$6,$4;}'`
 
 [all]
-ape1 ansible_host=172.31.5.10
+
+[physical]
+#ape1 ansible_host=172.31.5.10
 cmp1-nuc11 ansible_host=172.31.5.11
+
+[kvm]
+cmp2-kvm ansible_host=172.31.1.12
+cmp3-kvm ansible_host=172.31.1.13
+
+
+[microk8s]
+cmp1-nuc11
+cmp2-kvm
+cmp3-kvm
 
 #[kube]
 #cmp1-nuc11 ansible_host=172.16.0.16

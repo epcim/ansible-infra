@@ -4,31 +4,36 @@
   when: terraform_template is defined
 
 # to customize (loadbalancer IPs)
-# - name: create terraform.tfvars from template
-#   delegate_to: localhost
-#   become: no
-#   template:
-#     src: "{{playbook_dir}}/{{ terraform-template }}/template.tfvars.j2"
-#     dest: "{{playbook_dir}}/{{ terraform-template }}/template.tfvars"
-#     mode: 0666
-# when: terraform-template is defined
+- name: create terraform.tfvars from template
+  delegate_to: localhost
+  become: no
+  template:
+    src: "{{playbook_dir}}/{{ terraform_template }}/template.tfvars.j2"
+    dest: "{{playbook_dir}}/{{ terraform_template }}/template.tfvars"
+    mode: 0640
+  when: terraform_template is defined
 
 - name: upload TF code
   ansible.builtin.copy:
     src: "{{playbook_dir}}/{{ terraform_template }}"
-    dest: "~/terraform/{{ terraform_template | basename }}"
-    #owner: foo
-    #group: foo
-    #mode: '0644'  
+    dest: "~/terraform"
+    force: yes
+    #owner: root
+    #group: root
+    #mode: '0640'  
   when: terraform_template is defined
 
-- name: execute TF on remote
-  command: "make"
+- name: execute TF to remote
+  command: "make TF_ARGS='-vars-file template.tfvars'" #VM=
   args:
     chdir: "~/terraform/{{ terraform_template | basename }}"
   register: run_make
+  when: 
+  - terraform_enabled|default(false)|bool == true
+  - terraform_template is defined
+
 - debug: msg="{{run_make.stdout_lines}}"
   when: 
+  - terraform_enabled|default(false)|bool == true
   - terraform_template is defined
-  - terraform_enabled
 

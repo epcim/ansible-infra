@@ -47,3 +47,9 @@
 - community.libvirt.virt_pool:
     command: list_pools
 
+
+## TODO, FIXME
+#
+#https://github.com/dmacvicar/terraform-provider-libvirt/issues/546#issuecomment-612983090
+# security_driver = "none" in /etc/libvirt/qemu.conf but followed by sudo systemctl restart libvirtd
+

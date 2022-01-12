@@ -1,0 +1,9 @@
+systemd_network_networks:
+  ens3:
+    Network:
+      DHCP: no
+      Address: 172.31.1.13/24
+      Gateway: 172.31.1.11
+      DNS: 8.8.8.8
+      #Domains: "apealive.net"
+ 

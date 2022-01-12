@@ -1,7 +1,7 @@
 
 # admin users
 admin_authorized_keys:
-- ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGwsfObHWHqBv6UQBjvm0nkgnAGc5MZPuQXJ3ln4sM1P pmichalec@dontpanic
+- "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGwsfObHWHqBv6UQBjvm0nkgnAGc5MZPuQXJ3ln4sM1P" # epcim
 admin_users:
 - epcim
 autom_users: #automation (no sudo for root)
@@ -29,7 +29,8 @@ microk8s_plugins:
   traefik: false
   prometheus: false
 #users: ["epcim"]
-microk8s_enable_HA: false
+microk8s_enable_HA: true # NOTE, enable on joined nodes
+microk8s_group_HA: "microk8s"
 # hostgroup whose members will form high-availability cluster
 #microk8s_group_HA: "microk8s_HA"
 # regex to select IP address for joining nodes in HA setup
