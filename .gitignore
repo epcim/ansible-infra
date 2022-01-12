@@ -2,4 +2,5 @@
 .*
 collections/
 
-inventory*/files/*id_*
+**/files/*id_ed25519
+**/files/*id_rsa
