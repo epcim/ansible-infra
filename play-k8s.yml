@@ -14,20 +14,18 @@
     - system
     - netplan
     - network
-    - microk8s
     #- hardening
     #- cleanup
   serial: "{{ batch_size|default(10) }}"
 
-
-- name: k8s-with-kvm
+- name: k8s
   become: true
   become_method: sudo
-  hosts:
-  - cmp1-nuc11
+  vars:
+  hosts: microk8s
   roles:
-  - kvm-setup
-  - terraform
+    - microk8s
+  serial: "{{ batch_size|default(1) }}"
 
 # no_log: '{{ no_log_ansible|default(False) }}'
 

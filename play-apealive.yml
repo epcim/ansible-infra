@@ -1,0 +1,3 @@
+
+- import_playbook: ./play-k8s.yml
+- import_playbook: ./play-kvm.yml

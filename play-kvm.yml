@@ -1,0 +1,9 @@
+
+- name: kvm
+  become: true
+  become_method: sudo
+  hosts: physical
+  roles:
+  - kvm-setup
+  - terraform
+
