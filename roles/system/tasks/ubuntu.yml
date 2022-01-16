@@ -8,13 +8,16 @@
   when: upgrade
   tags: upgrade
 
-#- name: be sure the dependencies are installed
-#  apt:
-#    state: latest
-#    name:
-#      - ca-certificates
-#      - python3
-#      - python3-pip
-#      - auditd
-#      - audispd-plugins
-#      - parted
+# FIXME, move to SERVER ROLE etc?
+- name: utilities
+  block:
+  - apt:
+      state: present
+      name:
+      - lm-sensors
+  - snap:
+      state: present
+      name:
+      - jq
+      - docker
+
