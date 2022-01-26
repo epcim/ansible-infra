@@ -44,29 +44,25 @@ restic_backups:
     src: "/mnt/Disk*/hg2g"
     exclude:
     - /mnt/DiskA/hg2g/media
-    schedule_oncalendar: '*-*-* 01:00:00'
-    schedule_weekday: 4 # Monday, FIXME
+    schedule_oncalendar: 'Thu *-*-* 01:00:00'
   hg2g-media:
     <<: *restic_global
     name: hg2g-media
     repo: hg2g-media
     src: "/mnt/Disk*/hg2g/media"
-    schedule_oncalendar: '*-*-* 01:00:00'
-    schedule_weekday: 2
+    schedule_oncalendar: 'Fri *-*-* 01:00:00'
   workspace:
     <<: *restic_global
     name: workspace
     repo: workspace
     src: "/mnt/Disk*/workspace"
-    schedule_oncalendar: '*-*-* 01:00:00'
-    schedule_weekday: 6
+    schedule_oncalendar: 'Sat *-*-* 01:00:00'
   workspace-work:
     <<: *restic_global
     name: workspace-work
     repo: workspace-work
     src: "/mnt/Disk*/workspace-work"
-    schedule_oncalendar: '*-*-* 01:00:00'
-    schedule_weekday: 7
+    schedule_oncalendar: 'Sun *-*-* 01:00:00'
 
 ## KVM
 terraform_enabled: false # NOTE: disabled after first run
