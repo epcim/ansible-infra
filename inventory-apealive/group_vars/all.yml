@@ -28,5 +28,38 @@ allow_node_restart: false
 
 # coredump
 #kcd_version: "0.2.7"
-
 opt_bin_path: /opt/bin
+
+
+# backups
+restic_systemd_timer_randomizeddelaysec: '2h'
+restic_create_schedule: true
+restic_schedule_type: "systemd"
+# ansible_service_mgr: "systemd"
+#
+# https://github.com/roles-ansible/ansible_role_restic#backups
+#restic_repos:
+#  example:
+#    location: sftp://
+#    password: "{{ restic_main_password }}"
+#    init: true
+ 
+#restic_global: &restic_global
+#    mail_on_error: true
+#    mail_address: "{{ alert_email_address }}"
+#    scheduled: true
+#    prune: true
+#    keep_daily: 7
+#    keep_weekly: 2
+#    keep_monthly: 3
+#    keep_yearly: 1
+#    #schedule_hour: 1 # morning
+#    #schedule_weekday: 1 # Monday
+#    #schedule_oncalendar: '*-*-* 01:00:00'
+
+#restic_backups:
+#  example:
+#    <<: *restic_global
+#    name: example
+#    repo: example
+ 

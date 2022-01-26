@@ -1,0 +1,32 @@
+---
+# defaults file for skeleton
+restic_url: '{{ restic_url_default }}'
+restic_version: '0.12.1'
+restic_download_path: '/opt/restic'
+restic_install_path: '/usr/bin'
+restic_script_dir: '/opt/restic'
+restic_log_dir: '{{ restic_script_dir }}/log'
+restic_repos: {}
+restic_backups: []
+restic_create_schedule: "{{ restic_create_cron }}"
+restic_schedule_type: "systemd"
+# restic_schedule_type: "cronjob"
+restic_no_log: true
+
+restic_dir_owner: '{{ ansible_user | default(ansible_user_id) }}'
+restic_dir_group: '{{ ansible_user | default(ansible_user_id) }}'
+
+# timer defaults
+restic_systemd_timer_randomizeddelaysec: '4h'
+restic_systemd_timer_default_OnCalendar: '*-*-* 02:00:00'
+
+# perform simple version check for this role? (true is recomended)
+submodules_versioncheck: false
+restic_do_not_cleanup_cron: false
+
+# cache
+restic__cache_config: false
+restic__cache_dir: '~/.cache/restic'
+
+# outdated variables because of irritating names, but kept for compatibility
+restic_create_cron: false

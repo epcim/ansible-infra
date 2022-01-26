@@ -1,0 +1,30 @@
+- name: system
+  become: true
+  become_method: sudo
+  vars:
+  # cloud_vendor: aws
+  # FOR ANOTHER LEVEL OF GROUP:CHILDREN STRUCTURE
+  # vars_files:
+  # - "vars/{{ function }}.yml"
+  # - "vars/{{ xyz }}.yml"
+  hosts: all
+  roles:
+    - sshd
+    - users
+    - system
+    - netplan
+    - network
+    #- hardening
+    #- cleanup
+  serial: "{{ batch_size|default(10) }}"
+
+- name: backup
+  become: true
+  become_method: sudo
+  vars:
+  hosts: all
+  roles:
+    - restic
+  serial: "{{ batch_size|default(1) }}"
+  vars_files:
+  - .private_vars.yaml

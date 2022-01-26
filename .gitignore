@@ -4,3 +4,6 @@ collections/
 
 **/files/*id_ed25519
 **/files/*id_rsa
+
+.private*
+.secret*

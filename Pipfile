@@ -6,9 +6,10 @@ name = "pypi"
 [dev-packages]
 
 [packages]
-python-netaddr = "*"
+#python-netaddr = "*"
 envtpl = "*"
 ansible = "*"
+jmespath = "*"
 # kvm
 lxml = "*"
 libvirt-python = "*"

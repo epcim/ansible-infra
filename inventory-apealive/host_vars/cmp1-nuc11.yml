@@ -1,3 +1,72 @@
+## BACKUPS
+# main node, configuration overriden
+restic_script_dir: /mnt/Backup/restic
+restic_systemd_timer_randomizeddelaysec: '2h'
+
+restic_global: &restic_global
+    mail_on_error: true
+    mail_address: "{{ alert_email_address }}"
+    exclude_cache: true
+    scheduled: true
+    prune: true
+    keep_daily: 7
+    keep_weekly: 2
+    keep_monthly: 3
+    keep_yearly: 1
+    #schedule_hour: 1 # morning
+    #schedule_weekday: 1 # Monday
+    #schedule_oncalendar: '*-*-* 01:00:00'
+
+# https://github.com/roles-ansible/ansible_role_restic#backups
+restic_repos:
+  hg2g:
+    location: /mnt/Backup/restic/hg2g
+    password: "{{ restic_main_password }}"
+    init: true
+  hg2g-media:
+    location: /mnt/Backup/restic/hg2g-media
+    password: "{{ restic_main_password }}"
+    init: true
+  workspace:
+    location: /mnt/Backup/restic/workspace
+    password: "{{ restic_main_password }}"
+    init: true
+  workspace-work:
+    location: /mnt/Backup/restic/workspace-work
+    password: "{{ restic_main_password }}"
+    init: true
+ 
+restic_backups:
+  hg2g:
+    <<: *restic_global
+    name: hg2g
+    repo: hg2g
+    src: "/mnt/Disk*/hg2g"
+    exclude:
+    - /mnt/DiskA/hg2g/media
+    schedule_oncalendar: '*-*-* 01:00:00'
+    schedule_weekday: 4 # Monday, FIXME
+  hg2g-media:
+    <<: *restic_global
+    name: hg2g-media
+    repo: hg2g-media
+    src: "/mnt/Disk*/hg2g/media"
+    schedule_oncalendar: '*-*-* 01:00:00'
+    schedule_weekday: 2
+  workspace:
+    <<: *restic_global
+    name: workspace
+    repo: workspace
+    src: "/mnt/Disk*/workspace"
+    schedule_oncalendar: '*-*-* 01:00:00'
+    schedule_weekday: 6
+  workspace-work:
+    <<: *restic_global
+    name: workspace-work
+    repo: workspace-work
+    src: "/mnt/Disk*/workspace-work"
+    schedule_oncalendar: '*-*-* 01:00:00'
+    schedule_weekday: 7
 
 ## KVM
 terraform_enabled: false # NOTE: disabled after first run
