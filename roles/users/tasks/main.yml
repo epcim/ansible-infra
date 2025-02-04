@@ -13,7 +13,26 @@
 #   list_merged: 
 
 # with_flattened:
-#
+
+- name: Create groups 
+  group:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ admin_users +  autom_users }}"
+
+- name: Create users
+  user:
+    shell: "/bin/bash"
+    name: "{{ item }}"
+    group: "{{ item }}"
+    #update_password: on_create
+    #password: "x" # disabled
+    #groups:
+    #  - wheel
+    ssh_key_file: "{{lookup('file', '{{ item }}_id_ed25519.pub')}}"
+  register: user_results
+  with_items: "{{ admin_users +  autom_users }}"
+
 
 - name: Sudo for automation user
   copy:
@@ -41,22 +60,9 @@
   loop: "{{ autom_users | product(admin_users) | list }}"
 
 
-- name: Create groups 
-  group:
-    name: "{{ item }}"
-    state: present
-  with_items: "{{ admin_users +  autom_users }}"
 
-- name: Create users
-  user:
-    shell: "/bin/bash"
-    name: "{{ item }}"
-    group: "{{ item }}"
-    #update_password: on_create
-    #password: "x" # disabled
-    #groups:
-    #  - wheel
-    ssh_key_file: "{{lookup('file', '{{ item }}_id_ed25519.pub')}}"
-  register: user_results
-  with_items: "{{ admin_users +  autom_users }}"
+
+## Personal Flavors
+- include_vars: "{{ ansible_os_family | lower }}.yml"
+- include_tasks: "{{ ansible_facts['distribution'] | lower }}.yml"
 

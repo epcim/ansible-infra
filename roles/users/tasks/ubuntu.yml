@@ -1,0 +1,42 @@
+# This is about to be recofigured per username profile
+
+- name: User Profile - common
+  become: true
+  shell: |
+    # apt
+    apt-get install -y neovim
+
+    # other
+    export PATH=$PATH:/home/linuxbrew/.linuxbrew/bin
+    which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# - name: User Profile - brew
+#   become: true
+#   become_user: "{{item}}"
+#   with_items:  "{{autom_users}}" #  + admin_users
+#   shell: |
+#
+
+- name: User Profile - config - dotfiles
+  become: true
+  become_user: "{{item}}"
+  with_items:  "{{autom_users}}" #  + admin_users
+  shell: |
+    # snap
+    # snap install chezmoi --classic
+
+    # tools
+    export PATH=$PATH:/home/linuxbrew/.linuxbrew/bin
+    #brew install jq yq gopass age nnn
+
+    # kube
+    # mkdir ~/.kube || true
+    echo xxx
+
+    # dotfiles
+    # chezmoi init --exclude encrypted \
+    #   --ssh --guess-repo-url=false \
+    #   -C ~/.config/chezmoi/chezmoi.toml \
+    #   https://gitea.apealive.net/epcim/dotfiles.git
+
+    #chezmoi apply 

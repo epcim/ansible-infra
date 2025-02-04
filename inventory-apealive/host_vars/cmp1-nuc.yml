@@ -1,3 +1,4 @@
+:q
 ## BACKUPS
 # main node, configuration overriden
 restic_script_dir: /mnt/Backup/restic

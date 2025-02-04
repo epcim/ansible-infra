@@ -5,7 +5,7 @@
   hosts: microk8s
   roles:
     - microk8s
-    - falco
+    #- falco
   serial: "{{ batch_size|default(1) }}"
 
 # no_log: '{{ no_log_ansible|default(False) }}'

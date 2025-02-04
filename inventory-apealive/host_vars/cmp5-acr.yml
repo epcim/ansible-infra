@@ -1,0 +1,126 @@
+## NETWORK
+# https://github.com/mrlesmithjr/ansible-netplan
+# alternative: https://github.com/hifis-net/ansible-role-netplan
+# - wifi, for management, managed by netplan
+# - eth, for vlan networking, managed by systemd
+netplan_enabled: false        # NOTE, disable after first setup
+netplan_remove_existing: false # FIXME
+netplan_config_file: /etc/netplan/00-installer-config-wifi.yaml
+netplan_renderer: networkd
+netplan_configuration:
+  network:
+    version: 2
+    wifis:
+        access-points:
+          BARISTA5:
+            password: FIXME
+        dhcp4: true
+        dhcp4-overrides:
+          route-metric: 2048
+          use-routes: false
+
+#(systemd)
+# https://github.com/stuvusIT/ansible_systemd_network
+# alternative: https://github.com/stackhpc/ansible-role-systemd-networkd
+
+# NOTE: FIXME add vlans, k module
+# ip link add link enp88s0 name vlan10 type vlan id 10
+# ip link add link enp88s0 name vlan20 type vlan id 20
+# ip link add link enp88s0 name vlan50 type vlan id 50
+# ip link add link enp88s0 name vlan120 type vlan id 120
+
+systemd_network_netdevs:
+  # vlan10:
+  #   NetDev: 
+  #     Kind: vlan
+  #   VLAN:
+  #     Id: 10
+  vlan20:
+    NetDev:
+      Kind: vlan
+    VLAN:
+      Id: 20
+  vlan50:
+    NetDev:
+      Kind: vlan
+    VLAN:
+      Id: 50
+  vlan120:
+    NetDev:
+      Kind: vlan
+    VLAN:
+      Id: 120
+  br0:
+    NetDev:
+      Kind: bridge
+      VLANFiltering: true
+      STP: yes
+
+systemd_network_networks:
+  wlp3s0:
+  # managed either by netplan !!
+    Network:
+      DHCP: ipv4
+      #Domains: "apealive.net"
+      UseDNS: no
+      UseDomains: no
+    # Route:
+    # - Destination: 172.31.5.0/24
+    #   #Gateway: 172.31.5.1
+    #   Metric: 2048  # default (as fallback if eth down) # FIXME
+    #     #Metric: 100   # when hyou want to force it primary
+  enp2s0:
+    Network:
+      Bridge: br0
+  #enp4s0:
+    # will be used to route wiim, or in bond0
+  br0:
+    Network:
+      DHCP: no
+      Address: 172.31.1.15/24
+      Gateway: 172.31.1.1                # ONLY WHEN ETHERNET IS PLUGGED IN
+      DNS: 172.31.1.1 8.8.8.8
+      #Domains: "apealive.net"
+      VLAN:
+        - vlan20
+        - vlan50
+        - vlan120
+      ConfigureWithoutCarrier: yes
+      # tagged only setup (all below to "no") \\
+      #LinkLocalAddressing: no
+      #LLDP: yes
+      #EmitLLDP: yes
+      #IPv6AcceptRA: no
+      #IPv6SendRA: no
+    Link:
+      RequiredForOnline: yes
+  vlan20:
+    Network:
+      Address: 172.31.2.15/24
+      Domains: "apealive.net"
+      ConfigureWithoutCarrier: yes
+    Route:
+    - Destination: 172.31.2.0/24
+      #Gateway: 172.31.2.1
+      Metric: 1024
+  vlan50:
+    Network:
+      DHCP: no
+      Address: 172.31.5.15/24
+      # Domains: "int.apealive.net"
+      ConfigureWithoutCarrier: yes
+    Route:
+    - Destination: 172.31.5.0/24
+      #Gateway: 172.31.5.1
+      Metric: 0
+  vlan120:
+    Network:
+      Address: 192.168.124.1/21
+      #Domains: "dev.apealive.net"
+      ConfigureWithoutCarrier: yes
+    Route:
+    - Destination: 192.168.120.0/21
+      Gateway: 192.168.120.1
+      Metric: 1024
+
+

@@ -15,6 +15,9 @@
       state: present
       name:
       - lm-sensors
+      - nfs-common
+      - net-tools
+      - bridge-utils
   - snap:
       state: present
       name:

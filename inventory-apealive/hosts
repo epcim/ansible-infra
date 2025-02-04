@@ -6,17 +6,16 @@
 [all]
 
 [physical]
-cmp1-nuc11 ansible_host=172.31.1.11
+#cmp1-nuc11 ansible_host=172.31.1.11
+cmp5-acr ansible_host=172.31.1.15
 
 #[kvm]
 #cmp2-kvm ansible_host=172.31.1.12
 #cmp3-kvm ansible_host=172.31.1.13
 
-
 [microk8s]
-cmp1-nuc11
-#cmp2-kvm
-#cmp3-kvm
+cmp5-acr
+#cmp1-nuc11    # DECOMISSIONED
 
 #[kube:vars]
 #super_group = sudo
