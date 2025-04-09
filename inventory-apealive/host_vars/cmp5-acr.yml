@@ -97,7 +97,7 @@ systemd_network_networks:
   vlan20:
     Network:
       Address: 172.31.2.15/24
-      Domains: "apealive.net"
+      #Domains: "apealive.net" # NOT it spoils /etc/resolv.conf search, and all pods then fail to resolve, as long as it points to GITHUB/TRAEFIK
       ConfigureWithoutCarrier: yes
     Route:
     - Destination: 172.31.2.0/24

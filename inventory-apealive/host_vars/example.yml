@@ -26,7 +26,7 @@ netplan_configuration:
     #       gateway4: 172.31.1.1
     #       nameservers:
     #         addresses: [127.0.0.1, 192.168.100.1]
-    #         search: [ apealive.net]
+    #         search: [ apealive.net]#   # NOT ON SERVER NETWORK !!!
     # # bridges:
     # #   br0:
     # #     dhcp4: true
